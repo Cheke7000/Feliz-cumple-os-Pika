@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Galaxia de girasoles</title>
+<style>
+*{margin:0}
+html,body{height:100%;overflow:hidden;background:#06030f;overscroll-behavior:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.win{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#06030fb0;padding:24px;z-index:5}
+.win.open{display:flex}
+.card{max-width:340px;background:#fff6e4;color:#5b2a4a;border-radius:20px;padding:26px 24px;text-align:center;font-family:Georgia,serif;box-shadow:0 20px 60px #000a;animation:pop .35s}
+.card .em{font-size:34px}
+.card h2{font-size:26px;font-weight:400;font-style:italic;color:#c2357a;margin-top:4px}
+.card p{font-size:18px;line-height:1.5;margin:12px 0 20px;white-space:pre-line}
+.card button{font:inherit;padding:10px 26px;border:0;border-radius:999px;background:#ff5c9a;color:#fff}
+@keyframes pop{from{transform:scale(.85);opacity:0}}
+</style>
+</head>
+<body>
+<div class="win" id="win"><div class="card"><div class="em">🌻</div><h2 id="ct"></h2><p id="cm"></p><button id="cx">Cerrar</button></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ✏️ Frases sobre los ramos (una por ramo, puedes poner las que quieras)
+const FRASES = ['Mi mejor amiga', 'Eres lo mejor', 'Flores amarillas para ti', 'Eres mi sol', 'Contigo todo brilla', 'Gracias por estar siempre', 'Eres increíble', 'Un girasol para ti'];
+// Mensaje de la tarjeta que se abre al tocar cada ramo (mismo orden que FRASES)
+const MENSAJES = [
+  'Quiero que sepas lo mucho que significas para mí. Tener una mejor amiga como tú es de las cosas más bonitas que la vida me ha dado.',
+  'De verdad eres lo mejor. Tienes una forma de ser que hace que todo se sienta más ligero y más bonito.',
+  'Estas flores amarillas son para ti, con todo mi cariño. Ojalá te saquen una sonrisa hoy.',
+  'Eres como un girasol: donde llegas, todo se ilumina. Gracias por tanta luz.',
+  'Contigo hasta los días grises tienen color. Gracias por acompañarme en todo.',
+  'Gracias por estar siempre, en las buenas y en las malas. Eso no se paga con nada.',
+  'Qué suerte tener una amiga como tú. Se te quiere muchísimo.',
+  'Que nunca te falte el sol. Aquí me tienes para lo que necesites, siempre.'
+];
+const NOMBRE = 'Mejor amiga', SUBTEXTO = 'Con mucho cariño, de tu amigo';
+const MENSAJE_CORAZON = 'Quiero que sepas lo mucho que te quiero y lo importante que eres en mi vida. Gracias por ser mi mejor amiga, por cada momento y por siempre estar ahí.\n\nCon amor y cariño, de tu amigo. Aquí están tus flores amarillas. 🌻';
+
+(function () {
+  if (!window.THREE) { document.body.innerHTML = '<p style="color:#ffe27a;font:18px Georgia;padding:24px">Necesita internet para cargar three.js</p>'; return; }
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.setClearColor(0x06030f, 1);
+  document.body.appendChild(renderer.domElement);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(50, 1, .1, 400);
+  const sm = (a, b, x) => { x = Math.min(1, Math.max(0, (x - a) / (b - a))); return x * x * (3 - 2 * x); };
+  const randn = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+  function fit() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+  addEventListener('resize', fit); fit(); scene.add(camera);
+
+  // Texturas
+  function radial(f) { const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32); f(g); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); }
+  const soft = radial(g => { g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.4, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)'); });
+  const sfTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d'); x.translate(64, 64);
+    for (let L = 0; L < 2; L++) for (let i = 0; i < 16; i++) {
+      x.save(); x.rotate((i + L * .5) / 16 * 6.2832); x.beginPath(); x.ellipse(0, -(L ? 36 : 40), L ? 8 : 9, L ? 19 : 21, 0, 0, 6.2832);
+      x.fillStyle = L ? '#ffd21f' : '#f2a200'; x.fill(); x.restore();
+    }
+    x.beginPath(); x.arc(0, 0, 24, 0, 6.2832); x.fillStyle = '#4a2a0c'; x.fill();
+    return new THREE.CanvasTexture(c);
+  })();
+
+  const fade = [];   // [material, opacidad final]
+  function pts(p, c, o) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(p, 3)); g.setAttribute('color', new THREE.BufferAttribute(c, 3));
+    const m = new THREE.PointsMaterial(Object.assign({ vertexColors: true, transparent: true, depthWrite: false }, o));
+    fade.push([m, o.opacity || 1]); return new THREE.Points(g, m);
+  }
+
+  // Fondo de partículas
+  const sky = new THREE.Group(); scene.add(sky);
+  { const n = 1500, p = new Float32Array(n * 3), c = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      const u = Math.random() * 2 - 1, a = Math.random() * 6.2832, s = Math.sqrt(1 - u * u), r = 70 + Math.random() * 50, k = .5 + Math.random() * .5;
+      p.set([s * Math.cos(a) * r, u * r, s * Math.sin(a) * r], i * 3);
+      c.set((Math.random() < .2 ? [1, .7, .85] : [1, .9, .55]).map(v => v * k), i * 3);
+    }
+    sky.add(pts(p, c, { size: 1.8, sizeAttenuation: false, map: soft, blending: THREE.AdditiveBlending, opacity: .9 })); }
+
+  // Galaxia espiral
+  const galaxy = new THREE.Group(); scene.add(galaxy); galaxy.visible = false;
+  const ARMS = 3, RAD = 12, TW = .38;
+  function spiral(n, bulge, sp) {
+    const p = new Float32Array(n * 3), c = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      let x, y, z, r;
+      if (Math.random() < bulge) {
+        r = Math.abs(randn()) * 2.1; const a = Math.random() * 6.2832;
+        x = Math.cos(a) * r; z = Math.sin(a) * r; y = randn() * r * .5;
+      } else {
+        r = 1.5 + Math.pow(Math.random(), 1.5) * (RAD - 1.5);
+        const a = ((Math.random() * ARMS) | 0) * 6.2832 / ARMS + r * TW + randn() * sp * (.14 + .025 * r), rr = r + randn() * .4 * sp;
+        x = Math.cos(a) * rr; z = Math.sin(a) * rr; y = randn() * (.15 + .5 * Math.exp(-r / 3));
+      }
+      const k = Math.max(0, 1 - r / RAD);
+      p.set([x, y, z], i * 3); c.set([1, .88 + .12 * k, .45 + .5 * k * k], i * 3);
+    }
+    return [p, c];
+  }
+  const add = (n, b, o, sp) => { const [p, c] = spiral(n, b, sp || 1); galaxy.add(pts(p, c, o)); };
+  add(9000, .25, { size: .24, map: soft, blending: THREE.AdditiveBlending, opacity: .6 });
+  add(2500, 1, { size: .4, map: soft, blending: THREE.AdditiveBlending, opacity: .7 });
+  add(4000, .1, { size: .7, map: soft, blending: THREE.AdditiveBlending, opacity: .14 }, 3.2);
+  add(1600, .12, { size: .75, map: sfTex, alphaTest: .3 }, .8);
+  add(320, .03, { size: 1.3, map: sfTex, alphaTest: .3 }, .8);
+  for (const [col, sc, o] of [[0xffd45a, 9, .9], [0xffffff, 3.4, .7]]) {
+    const m = new THREE.SpriteMaterial({ map: soft, color: col, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false });
+    const s = new THREE.Sprite(m); s.scale.set(sc, sc, 1); scene.add(s); fade.push([m, o]);
+  }
+
+  // Luces para los ramos
+  scene.add(new THREE.AmbientLight(0xffffff, .6));
+  const core = new THREE.PointLight(0xffe6a0, 2.2, 40); core.position.set(0, 1.5, 0); scene.add(core);
+
+  // Ramos 3D pequeños
+  const petGeo = new THREE.SphereGeometry(1, 6, 4), petMat = new THREE.MeshStandardMaterial({ roughness: .6 });
+  const discGeo = new THREE.SphereGeometry(1, 12, 8), discMat = new THREE.MeshStandardMaterial({ color: 0x3a220c, roughness: .9 });
+  const backMat = new THREE.MeshStandardMaterial({ color: 0x3b7a2b, roughness: .8 }), stemMat = backMat;
+  const pinkMat = new THREE.MeshStandardMaterial({ color: 0xff8fb8, roughness: .7, side: THREE.DoubleSide });
+  const o = new THREE.Object3D(), col = new THREE.Color(); o.rotation.order = 'ZXY';
+  function head(R) {
+    const h = new THREE.Group(), n = 13, pet = new THREE.InstancedMesh(petGeo, petMat, n * 2);
+    for (let L = 0; L < 2; L++) for (let i = 0; i < n; i++) {
+      const a = (i + L * .5) / n * 6.2832, sy = R * (L ? .3 : .34), rc = R * .36 + sy * .95;
+      o.position.set(Math.cos(a) * rc, Math.sin(a) * rc, L ? R * .05 : 0);
+      o.rotation.set(L ? .05 : -.06, 0, a - 1.5708); o.scale.set(R * (L ? .15 : .16), sy, R * .05);
+      o.updateMatrix(); pet.setMatrixAt(L * n + i, o.matrix); pet.setColorAt(L * n + i, col.setHex(L ? 0xffd21f : 0xf5a800));
+    }
+    const d = new THREE.Mesh(discGeo, discMat); d.scale.set(R * .42, R * .42, R * .15); d.position.z = R * .06;
+    const b = new THREE.Mesh(discGeo, backMat); b.scale.set(R * .6, R * .6, R * .1); b.position.z = -R * .09;
+    h.add(pet, d, b); return h;
+  }
+  function bouquet() {
+    const b = new THREE.Group(), p = new THREE.Mesh(new THREE.ConeGeometry(.45, .9, 12, 1, true), pinkMat);
+    p.rotation.x = Math.PI; p.position.y = .45; b.add(p);
+    [[-.38, 1.5, .05, .3], [0, 1.85, 0, .38], [.38, 1.5, -.05, .3]].forEach(([x, y, z, R], i) => {
+      const top = new THREE.Vector3(x, y - .05, z), bot = new THREE.Vector3(0, .7, 0), dir = top.clone().sub(bot);
+      const s = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, dir.length(), 5), stemMat);
+      s.position.copy(bot).lerp(top, .5); s.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize()); b.add(s);
+      const h = head(R); h.position.set(x, y, z); h.rotation.set(-.9, (i - 1) * .5, 0); b.add(h);
+    });
+    return b;
+  }
+  function label(txt) {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 160; const x = c.getContext('2d');
+    x.font = 'italic 64px Georgia,serif'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.shadowColor = '#ff7fb0'; x.shadowBlur = 20; x.fillStyle = '#ffe27a'; x.fillText(txt, 512, 80);
+    const m = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false });
+    fade.push([m, 1]); const s = new THREE.Sprite(m); s.scale.set(6.4, 1, 1); return s;
+  }
+  const hits = [];
+  FRASES.forEach((txt, i) => {
+    const r = 3.2 + i * 6 / Math.max(1, FRASES.length - 1), a = (i % ARMS) * 6.2832 / ARMS + r * TW;
+    const b = bouquet(); b.scale.setScalar(1.3); b.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); b.rotation.y = Math.random() * 6; galaxy.add(b);
+    const l = label(txt); l.position.set(b.position.x, 3.4, b.position.z); galaxy.add(l);
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(1.1, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
+    hit.position.y = 1.2; hit.userData.i = i; b.add(hit); l.userData.i = i; hits.push(hit, l);
+  });
+
+  // Corazón de partículas amarillas con el nombre encima
+  const heart = new THREE.Group(); heart.position.set(0, 4.8, 0); scene.add(heart);
+  {
+    const n = 2800, S = .18, p = new Float32Array(n * 3), c = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      const t = Math.random() * 6.2832, k = Math.random() < .4 ? Math.sqrt(Math.random()) : 1;
+      const hx = 16 * Math.pow(Math.sin(t), 3), hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t), w = Math.random();
+      p.set([(hx * k + randn() * 1.6) * S, (hy * k + 2.5 + randn() * 1.6) * S, randn() * 3 * S], i * 3);
+      c.set([1, .88 + .12 * w, .5 + .45 * w], i * 3);
+    }
+    heart.add(pts(p, c, { size: .3, map: soft, blending: THREE.AdditiveBlending, opacity: .9 }));
+    const hh = new THREE.Mesh(new THREE.SphereGeometry(3, 8, 6), new THREE.MeshBasicMaterial({ visible: false }));
+    hh.userData.i = FRASES.length; heart.add(hh); hits.push(hh);
+  }
+  {
+    const c = document.createElement('canvas'); c.width = 1024; c.height = 256; const x = c.getContext('2d');
+    x.textAlign = 'center'; x.shadowColor = '#ff7fb0'; x.shadowBlur = 24; x.fillStyle = '#fff0b0';
+    x.font = 'italic 120px Georgia,serif'; x.fillText(NOMBRE, 512, 130);
+    x.shadowBlur = 12; x.fillStyle = '#ffe27a'; x.font = 'italic 46px Georgia,serif'; x.fillText(SUBTEXTO, 512, 205);
+    const m = new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false });
+    fade.push([m, 1]); const nl = new THREE.Sprite(m); nl.scale.set(7, 1.75, 1); nl.position.set(0, 8.6, 0);
+    nl.userData.i = FRASES.length; scene.add(nl); hits.push(nl);
+  }
+
+  // Estrellas fugaces amarillas y blancas al fondo (pegadas a la cámara)
+  const trail = (() => {
+    const c = document.createElement('canvas'); c.width = 128; c.height = 16; const x = c.getContext('2d');
+    let g = x.createLinearGradient(0, 0, 128, 0);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.85, 'rgba(255,255,255,.85)'); g.addColorStop(1, 'rgba(255,255,255,1)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 16); x.globalCompositeOperation = 'destination-in';
+    g = x.createLinearGradient(0, 0, 0, 16); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.5, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 16); return new THREE.CanvasTexture(c);
+  })();
+  const shooters = [], SC = [0xfff4c2, 0xffe27a, 0xffffff, 0xffd45a];
+  for (let i = 0; i < 7; i++) {
+    const m = new THREE.SpriteMaterial({ map: trail, color: SC[i % 4], blending: THREE.AdditiveBlending, transparent: true, depthTest: false, depthWrite: false, opacity: 0 });
+    const sp = new THREE.Sprite(m); sp.renderOrder = -1; camera.add(sp);
+    shooters.push({ sp, m, age: 0, life: 0, wait: 1 + Math.random() * 3, x: 0, y: 0, dx: 0, dy: 0, v: 0, len: 0 });
+  }
+
+  // Viaje a la velocidad de la luz (partículas amarillas)
+  const N = 900, wp = new Float32Array(N * 6), wc = new Float32Array(N * 6), ws = [];
+  for (let i = 0; i < N; i++) {
+    const a = Math.random() * 6.2832, r = 1.2 + Math.pow(Math.random(), .7) * 44, k = .6 + Math.random() * .4;
+    ws.push([Math.cos(a) * r, Math.sin(a) * r, -90 + Math.random() * 114]); wc.set([k, k * .85, k * .3, 0, 0, 0], i * 6);
+  }
+  const wg = new THREE.BufferGeometry();
+  wg.setAttribute('position', new THREE.BufferAttribute(wp, 3)); wg.setAttribute('color', new THREE.BufferAttribute(wc, 3));
+  const wm = new THREE.LineBasicMaterial({ vertexColors: true, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false });
+  const warp = new THREE.LineSegments(wg, wm); warp.frustumCulled = false; scene.add(warp);
+
+  // Control con el dedo (giro libre de 360°)
+  const q = new THREE.Quaternion(), q2 = new THREE.Quaternion(), eu = new THREE.Euler();
+  function spin(a, b) {
+    eu.set(b, a, 0); q.setFromEuler(eu); galaxy.quaternion.premultiply(q);
+    eu.set(b * .3, a * .3, 0); q2.setFromEuler(eu); sky.quaternion.premultiply(q2);
+  }
+  let vx = 0, vy = 0, drag = false, px = 0, py = 0, dist = 1, tdist = 1;
+  const clock = new THREE.Clock();
+  const win = document.getElementById('win'), ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let sx = 0, sy = 0, st = 0;
+  function openCard(i) {
+    const ramo = i < FRASES.length;
+    document.getElementById('ct').textContent = ramo ? FRASES[i] : NOMBRE;
+    document.getElementById('cm').textContent = ramo ? MENSAJES[i % MENSAJES.length] : MENSAJE_CORAZON;
+    win.classList.add('open');
+  }
+  document.getElementById('cx').onclick = () => win.classList.remove('open');
+  win.onclick = e => { if (e.target === win) win.classList.remove('open'); };
+  renderer.domElement.addEventListener('pointerdown', e => { if (clock.elapsedTime < 2.4) return; drag = true; px = sx = e.clientX; py = sy = e.clientY; st = clock.elapsedTime; vx = vy = 0; });
+  addEventListener('pointerup', e => {
+    if (drag && Math.hypot(e.clientX - sx, e.clientY - sy) < 8 && clock.elapsedTime - st < .5) {
+      ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1); ray.setFromCamera(ndc, camera);
+      const h = ray.intersectObjects(hits, false)[0];
+      if (h) openCard(h.object.userData.i);
+    }
+    drag = false;
+  });
+  addEventListener('pointermove', e => {
+    if (!drag) return;
+    vx = (e.clientX - px) * .006; vy = (e.clientY - py) * .006; px = e.clientX; py = e.clientY; spin(vx, vy);
+  });
+  addEventListener('wheel', e => { tdist = Math.min(1.7, Math.max(.85, tdist * (1 + e.deltaY * .001))); }, { passive: true });
+
+  const A = new THREE.Vector3(), B = new THREE.Vector3(0, 2.5, 0), look = new THREE.Vector3();
+  renderer.setAnimationLoop(() => {
+    const dt = Math.min(clock.getDelta(), .05), T = clock.elapsedTime;
+    dist += (tdist - dist) * .1;
+    const bd = camera.aspect < 1 ? 1 + (1 - camera.aspect) * 1.6 : 1;
+    camera.position.set(0, 9 * dist * bd, 24 * dist * bd);
+
+    const sp = sm(0, .5, T) * (1 - sm(1.6, 2.6, T));
+    if (T < 3.4) {
+      const len = sp * 5 + .03, cz = camera.position.z, cy = camera.position.y;
+      for (let i = 0; i < N; i++) {
+        const s = ws[i]; s[2] += sp * 90 * dt; if (s[2] > cz) s[2] -= cz + 90;
+        const j = i * 6; wp[j] = wp[j + 3] = s[0]; wp[j + 1] = wp[j + 4] = cy + s[1]; wp[j + 2] = s[2]; wp[j + 5] = s[2] - len;
+      }
+      wg.attributes.position.needsUpdate = true; wm.opacity = 1 - sm(2.4, 3.2, T);
+      camera.fov = 50 + 28 * sp; camera.updateProjectionMatrix();
+    } else if (warp.visible) { warp.visible = false; camera.fov = 50; camera.updateProjectionMatrix(); }
+    A.set(0, camera.position.y, -100); look.lerpVectors(A, B, sm(1.5, 2.6, T)); camera.lookAt(look);
+
+    const e = sm(1.9, 3.4, T);
+    galaxy.visible = e > 0; galaxy.scale.setScalar(.2 + .8 * e);
+    for (const [m, op] of fade) m.opacity = op * e;
+    heart.scale.setScalar((.4 + .6 * e) * (1 + .07 * Math.pow(Math.max(0, Math.sin(T * 3)), 6))); heart.rotation.y = Math.sin(T * .4) * .35;
+    for (const h of shooters) {
+      if (!h.life) {
+        h.wait -= dt;
+        if (h.wait <= 0 && e > .9) {
+          const hh = 70 * Math.tan(.4363), ang = .35 + Math.random() * .5, dir = Math.random() < .5 ? -1 : 1;
+          h.x = (Math.random() * 2 - 1) * hh * camera.aspect; h.y = hh * (Math.random() * 1.2 - .1);
+          h.dx = dir * Math.cos(ang); h.dy = -Math.sin(ang); h.v = 30 + Math.random() * 25; h.len = 6 + Math.random() * 6;
+          h.life = .8 + Math.random() * .6; h.age = 0; h.m.rotation = Math.atan2(h.dy, h.dx); h.sp.scale.set(h.len, .4, 1);
+        }
+        continue;
+      }
+      h.age += dt; const u = h.age / h.life;
+      if (u >= 1) { h.life = 0; h.m.opacity = 0; h.wait = .6 + Math.random() * 2.5; continue; }
+      h.sp.position.set(h.x + h.dx * (h.v * h.age - h.len / 2), h.y + h.dy * (h.v * h.age - h.len / 2), -70);
+      h.m.opacity = Math.sin(Math.PI * u) * .9;
+    }
+    galaxy.rotateY(dt * (.06 + (1 - e) * 3));
+    if (!drag) { vx *= .94; vy *= .94; if (Math.abs(vx) + Math.abs(vy) > 1e-4) spin(vx, vy); }
+    renderer.render(scene, camera);
+  });
+})();
+</script>
+</body>
+</html>

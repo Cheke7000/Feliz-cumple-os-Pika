@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz cumpleaños, Pikachu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Space+Grotesk:wght@400;500;700&family=Zen+Maru+Gothic:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<!-- ============================================================
+     MODO HALLOWEEN: botón fijo + decoración (solo se ve activado)
+     ============================================================ -->
+<button id="boton-halloween" class="boton-halloween" aria-pressed="false">🎃 Modo Halloween</button>
+
+<div class="deco-halloween" aria-hidden="true">
+  <span style="left:6%;  font-size:2rem;   animation-duration:16s; animation-delay:0s;">🦇</span>
+  <span style="left:18%; font-size:2.6rem; animation-duration:22s; animation-delay:4s;">👻</span>
+  <span style="left:32%; font-size:1.8rem; animation-duration:18s; animation-delay:9s;">🦇</span>
+  <span style="left:47%; font-size:2.4rem; animation-duration:25s; animation-delay:2s;">🎃</span>
+  <span style="left:61%; font-size:2rem;   animation-duration:19s; animation-delay:7s;">🕷️</span>
+  <span style="left:74%; font-size:2.6rem; animation-duration:23s; animation-delay:12s;">👻</span>
+  <span style="left:86%; font-size:1.9rem; animation-duration:17s; animation-delay:5s;">🦇</span>
+  <span style="left:93%; font-size:2.2rem; animation-duration:26s; animation-delay:10s;">🎃</span>
+</div>
+<svg class="telarana telarana-izq" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 0 L100 0 M0 0 L90 40 M0 0 L70 70 M0 0 L40 90 M0 0 L0 100"/><path d="M25 0 Q22 22 0 25 M50 0 Q42 42 0 50 M75 0 Q62 62 0 75"/></g></svg>
+<svg class="telarana telarana-der" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1"><path d="M0 0 L100 0 M0 0 L90 40 M0 0 L70 70 M0 0 L40 90 M0 0 L0 100"/><path d="M25 0 Q22 22 0 25 M50 0 Q42 42 0 50 M75 0 Q62 62 0 75"/></g></svg>
+
+<!-- ============================================================
+     HERO — edita el nombre y el mensaje directamente aquí
+     ============================================================ -->
+<div class="hero">
+  <div class="eyebrow">De: Cheke <br> Para: Pikachu</div>
+  <h1>¡Feliz cumple,<br><span>Pikachu</span>!</h1>
+  <svg class="squiggle" viewBox="0 0 220 28"><path d="M2 20 Q 40 2, 70 18 T 140 16 T 218 10"/></svg>
+  <p class="subt">Reuní un poquito de todo lo que haces increíble: tus dibujos,
+    tus fotos y unas sorpresitas. Baja para que lo descubras. 🎨</p>
+  <div class="jp" lang="ja">お誕生日おめでとう</div>
+  <p class="solo-halloween">…y cumples años en el mes más misterioso del año 🎃</p>
+  <div class="scrolldown">↓ desliza ↓</div>
+</div>
+
+<!-- ============================================================
+     GALERÍA DE DIBUJOS
+
+     Para agregar un dibujo nuevo, copia todo el bloque marcado
+     "INICIO DIBUJO" hasta "FIN DIBUJO" y pégalo dentro de
+     #grid-dibujos, justo antes de </div>. No necesitas tocar el
+     CSS: el estilo (marco, sombra, gancho) se aplica solo por
+     tener la clase "tarjeta-dibujo".
+
+     - Cambia el "src" por la ruta o URL de la imagen.
+     - Cambia el texto entre <p> y </p> por la descripción.
+     ============================================================ -->
+<section id="dibujos">
+  <h2 class="titulo-seccion">Tu arte</h2>
+  <p class="intro-seccion">Has creado increíbles obras de arte y aquí hay unas pocas pruebas de lo talentosa que eres.</p>
+  <div class="corcho">
+    <div class="grid-dibujos" id="grid-dibujos">
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/Carlos la hormiga mario.jpg" alt="Carlos la hormiga y Mario">
+        <p>Carlos la hormiga en el multiverso. ¿Cómo olvidar el día que Carlos la Hormiga hizo que Mario se cayera?</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/pika aburrida.jpg" alt="Pika aburrida">
+        <p>Pika aburrida.</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/pika pokemon.jpg" alt="Pika entrenadora Pokémon">
+        <p>Pika entrenadora Pokémon es uno de mis favoritos porque siento que así me elegiste para ser tu amigo.</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/pika pelinegra y rubia.jpg" alt="Pika pelinegra y rubia">
+        <p>Te ves genial en todas tus versiones.</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/pika y el chico caja.jpg" alt="Pika y el chico caja">
+        <p>¡Miraaaaaa, somos nosotroooooos!!!</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/pika sonrojada.jpg" alt="Pika sonrojada">
+        <p>Pika sonrojada es igualita a ti cuando te dicen que te rías como señorita, jajaja.</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+      <!-- INICIO DIBUJO -->
+      <div class="tarjeta-dibujo">
+        <div class="cinta"></div>
+        <img src="dibujos/carlos la hormiga among us.jpg" alt="Carlos la hormiga en Among Us">
+        <p>Anda por todos lados menos en su casa.</p>
+      </div>
+      <!-- FIN DIBUJO -->
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOTOS DE ELLA
+
+     Para agregar una foto nueva copia el bloque "INICIO FOTO"
+     y pégalo antes de </div>. Solo cambia el "src".
+     ============================================================ -->
+<section id="fotos">
+  <h2 class="titulo-seccion">También tú</h2>
+  <p class="intro-seccion">Porque la protagonista de hoy no eres solo tú dibujando, eres tú.</p>
+  <div class="grid-fotos" id="grid-fotos">
+
+    <!-- INICIO FOTO -->
+    <img src="fotos pika/foto_pika_1.jpeg" alt="Foto de pika" class="foto-circulo">
+    <!-- FIN FOTO -->
+
+    <!-- INICIO FOTO -->
+    <img src="fotos pika/foto_pika_2.jpeg" alt="Foto de pika" class="foto-circulo">
+    <!-- FIN FOTO -->
+
+    <!-- INICIO FOTO -->
+    <img src="fotos pika/foto_pika_3.jpeg" alt="Foto de pika" class="foto-circulo">
+    <!-- FIN FOTO -->
+
+    <!-- INICIO FOTO -->
+    <img src="fotos pika/foto_pika_4.jpeg" alt="Foto de pika" class="foto-circulo">
+    <!-- FIN FOTO -->
+
+    <!-- INICIO FOTO -->
+    <img src="fotos pika/foto_pika_5.jpeg" alt="Foto de pika" class="foto-circulo">
+    <!-- FIN FOTO -->
+
+  </div>
+</section>
+
+<!-- ============================================================
+     FICHA DE PERSONAJE (estilo anime / RPG)
+
+     Todo se edita aquí mismo:
+     - La foto, el nivel (su edad), el nombre y la clase.
+     - Cada estadística: cambia el nombre y el número. La barra
+       se llena sola según el número (0 a 100). Si pones algo que
+       no es número, por ejemplo ∞, la barra queda llena.
+     - Para agregar otra estadística copia el bloque
+       "INICIO STAT" hasta "FIN STAT".
+     ============================================================ -->
+<section id="ficha">
+  <h2 class="titulo-seccion">Tu ficha de personaje</h2>
+  <p class="intro-seccion">Si la vida fuera un anime, esta sería tu pantalla de estadísticas el día que subes de nivel.</p>
+
+  <div class="ficha">
+    <div class="ficha-cabecera">
+      <img class="ficha-foto" src="fotos pika/foto_pika_6.jpeg" alt="Foto de pika">
+      <div>
+        <div class="ficha-nivel">NIVEL <strong>26</strong></div>
+        <h3 class="ficha-nombre">Pikachu</h3>
+        <div class="ficha-clase">Clase: Artista legendaria</div>
+      </div>
+    </div>
+
+    <div class="ficha-stats">
+
+      <!-- INICIO STAT -->
+      <div class="stat">
+        <span class="stat-nombre">Creatividad</span>
+        <div class="barra"><div class="barra-llena"></div></div>
+        <span class="stat-valor">98</span>
+      </div>
+      <!-- FIN STAT -->
+
+      <!-- INICIO STAT -->
+      <div class="stat">
+        <span class="stat-nombre">Paciencia con el lineart</span>
+        <div class="barra"><div class="barra-llena"></div></div>
+        <span class="stat-valor">87</span>
+      </div>
+      <!-- FIN STAT -->
+
+      <!-- INICIO STAT -->
+      <div class="stat">
+        <span class="stat-nombre">Estilo</span>
+        <div class="barra"><div class="barra-llena"></div></div>
+        <span class="stat-valor">100</span>
+      </div>
+      <!-- FIN STAT -->
+
+      <!-- INICIO STAT -->
+      <div class="stat">
+        <span class="stat-nombre">Ganas de dibujar a las 3 a. m.</span>
+        <div class="barra"><div class="barra-llena"></div></div>
+        <span class="stat-valor">∞</span>
+      </div>
+      <!-- FIN STAT -->
+
+    </div>
+
+    <div class="ficha-habilidad">
+      <span class="etiqueta">Habilidad especial</span>
+      Convertir una hoja en blanco, un trozo de cartón, pintura, pegamento y materiales que parecieran no tener valor, en algo que nadie más podría haber hecho.
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     MENSAJES DE AUDIO
+
+     Para agregar un mensaje nuevo copia el bloque "INICIO
+     MENSAJE" y pégalo antes de </div>. Cambia el nombre y el
+     "src" del audio.
+     ============================================================ -->
+<section id="mensajes">
+  <h2 class="titulo-seccion">Voces para ti</h2>
+  <p class="intro-seccion">Espero que este "pequeño" mensaje te guste.</p>
+  <div class="lista-mensajes" id="lista-mensajes">
+
+    <!-- INICIO MENSAJE -->
+    <div class="mensaje-audio">
+      <p class="quien">Cheke</p>
+      <audio controls preload="none" src="audios/cheke.mp3"></audio>
+    </div>
+    <!-- FIN MENSAJE -->
+
+    <!-- INICIO MENSAJE -->
+    <div class="mensaje-audio">
+      <p class="quien">Mucho texto jskajsaksjaksjak</p>
+      <audio controls preload="none" src="audios/cheke.2.mp3"></audio>
+    </div>
+    <!-- FIN MENSAJE -->
+
+  </div>
+</section>
+
+<!-- ============================================================
+     JUEGO DE MEMORIA
+     No hace falta tocar esta sección: el juego toma automática-
+     mente los dibujos que pusiste arriba en #grid-dibujos.
+     ============================================================ -->
+<section id="juego">
+  <div class="juego-wrap">
+    <h2 class="titulo-seccion">Un jueguito para ti</h2>
+    <p class="intro-seccion" style="margin-left:auto;margin-right:auto;">Encuentra las parejas de tus propios dibujos.</p>
+    <div id="tablero"></div>
+    <div id="estado-juego"></div>
+    <button id="reiniciar">Jugar de nuevo</button>
+  </div>
+</section>
+
+<!-- ============================================================
+     BOTÓN HACIA LA PÁGINA DE JUEGOS (juegos.html)
+     ============================================================ -->
+<section id="mas-juegos">
+  <div class="hand-pregunta">¿Quieres seguir jugando?</div>
+  <p>Hay más jueguitos y cositas interactivas esperándote.</p>
+  <a class="boton-amarillo" href="juegos.html">Más cositas...</a>
+</section>
+
+<!-- ============================================================
+     DEDICATORIA (carta final)
+     Cada párrafo es un <p>. Para agregar otro párrafo copia una
+     línea <p>...</p> y pégala donde quieras dentro de la carta.
+     El estilo (papel rayado, cinta amarilla, firma) se aplica solo.
+     ============================================================ -->
+<footer class="pie-carta">
+  <div class="carta-dedicatoria">
+    <div class="carta-cinta"></div>
+
+    <p>Siempre dices que no te gusta celebrar tu cumpleaños, pero pasarla bien con tus amigos y seres amados en tu día no suena tan mal.</p>
+
+    <p>También dices que no te gusta que te llamen por tu nombre, y sé que tienes tus motivos, pero solo por hoy déjame llamarte Jazmín.</p>
+
+    <p>Déjame desearte mis más sinceras felicitaciones, ya son 26 años. Sé que tu camino hasta este momento no ha sido fácil, pero jamás has dejado de ser tú misma.</p>
+
+    <p>Eres espontánea, creativa, divertida y sobre todo la mejor amiga del mundo.</p>
+
+    <p>Hay mucho más que decir, pero sin más preámbulos…</p>
+
+    <p class="carta-final">Feliz cumpleaños, pika</p>
+
+    <p class="carta-firma">Con amor y cariño, Cheke ✦</p>
+  </div>
+</footer>
+
+<!-- ============================================================
+     POP-UP para ver un dibujo en grande. No necesitas tocar
+     esto: se abre solo al hacer clic en cualquier dibujo de
+     la galería.
+     ============================================================ -->
+<div id="lightbox" class="lightbox oculto">
+  <button id="cerrar-lightbox" class="cerrar-lightbox" aria-label="Cerrar">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

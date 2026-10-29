@@ -1,0 +1,707 @@
+/* ============================================================
+   PALETA — el color favorito de ella es el negro, así que la
+   página entera es una pared de galería oscura y sus dibujos
+   son lo único iluminado.
+   ============================================================ */
+:root{
+  --negro: #000000;        /* el color favorito */
+  --pared: #0a0a0a;        /* fondo de la página */
+  --pared-2: #161616;      /* bloques y tarjetas */
+  --tiza: #f4f1ec;         /* texto claro */
+  --tiza-suave: #9b968e;   /* texto secundario */
+  --marco: #ffffff;        /* marco de los dibujos */
+  --linea: #2e2c29;        /* bordes finos */
+  --amarillo: #ffd60a;     /* acento: como un resaltador sobre la pared negra */
+  --amarillo-suave: rgba(255,214,10,.28);
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  background:var(--pared);
+  color:var(--tiza);
+  font-family:'Space Grotesk', sans-serif;
+  overflow-x:hidden;
+}
+h1,h2,.hand{ font-family:'Caveat', cursive; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  min-height:92vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:6vh 6vw;
+  position:relative;
+  background:
+    radial-gradient(ellipse at 50% 38%, #232323 0%, transparent 62%),
+    radial-gradient(ellipse at 50% 110%, rgba(255,214,10,.10) 0%, transparent 55%),
+    var(--negro);
+}
+.hero .eyebrow{
+  font-size:1.05rem;
+  color:var(--tiza-suave);
+  margin-bottom:.5rem;
+}
+.hero h1{
+  font-size:clamp(3rem, 11vw, 7rem);
+  line-height:0.95;
+  margin:0;
+  transform:rotate(-3deg);
+  color:var(--tiza);
+}
+/* el nombre va en negro con contorno blanco: relleno del color
+   favorito, visible gracias al trazo */
+.hero h1 span{
+  color:var(--amarillo);
+}
+.hero .subt{
+  max-width:38ch;
+  margin-top:1.4rem;
+  font-size:1.05rem;
+  line-height:1.6;
+  color:var(--tiza-suave);
+}
+.squiggle{
+  width:220px; height:28px; margin-top:1.2rem;
+  animation:draw 1.4s ease-out .3s both;
+}
+.squiggle path{
+  stroke:var(--amarillo);
+  stroke-width:5;
+  fill:none;
+  stroke-linecap:round;
+  stroke-dasharray:340;
+  stroke-dashoffset:340;
+}
+@keyframes draw{ to{ stroke-dashoffset:0; } }
+.scrolldown{
+  margin-top:3rem;
+  font-size:.9rem;
+  color:#5c5850;
+}
+
+/* ---------- SECCIONES ---------- */
+section{ padding:5rem 6vw; }
+.titulo-seccion{
+  font-size:clamp(2.2rem, 6vw, 3.4rem);
+  margin:0 0 2.5rem 0;
+  transform:rotate(-1.2deg);
+  display:inline-block;
+  color:var(--tiza);
+  /* subrayado tipo resaltador amarillo */
+  background:linear-gradient(transparent 62%, var(--amarillo-suave) 62%, var(--amarillo-suave) 92%, transparent 92%);
+  padding:0 .35rem;
+}
+.intro-seccion{
+  max-width:56ch;
+  color:var(--tiza-suave);
+  margin:-1.5rem 0 3rem 0;
+  line-height:1.6;
+}
+
+/* ---------- PARED DE GALERÍA / DIBUJOS ---------- */
+.corcho{
+  background:var(--negro);
+  border:1px solid var(--linea);
+  border-radius:4px;
+  padding:3.5rem 3vw;
+}
+.grid-dibujos{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+  gap:3rem 2.2rem;
+}
+/* cada dibujo va montado como una obra: marco blanco, sombra
+   proyectada sobre la pared negra */
+.tarjeta-dibujo{
+  background:var(--marco);
+  padding:16px 16px 22px 16px;
+  box-shadow:0 14px 34px rgba(0,0,0,.85);
+  transition:transform .25s ease, box-shadow .25s ease;
+  position:relative;
+}
+.tarjeta-dibujo:hover,
+.tarjeta-dibujo:focus-within{
+  transform:translateY(-8px);
+  box-shadow:0 22px 46px rgba(0,0,0,.95);
+  z-index:2;
+}
+/* el gancho del que cuelga cada cuadro */
+.tarjeta-dibujo .cinta{
+  position:absolute; top:-14px; left:50%;
+  transform:translateX(-50%);
+  width:2px; height:14px;
+  background:var(--linea);
+}
+.tarjeta-dibujo .cinta::after{
+  content:'';
+  position:absolute; top:-5px; left:50%;
+  transform:translateX(-50%);
+  width:7px; height:7px;
+  border-radius:50%;
+  background:#3a3733;
+}
+.tarjeta-dibujo img{
+  width:100%; height:220px; object-fit:cover; display:block;
+  background:#e8e5df;
+  cursor:zoom-in;
+}
+.tarjeta-dibujo p{
+  font-family:'Caveat', cursive;
+  font-size:1.3rem;
+  margin:.9rem 0 0 0;
+  text-align:center;
+  color:#1a1a1a;
+}
+
+/* ---------- FOTOS DE ELLA ---------- */
+.grid-fotos{
+  display:flex;
+  flex-wrap:wrap;
+  gap:1.8rem;
+  justify-content:center;
+}
+.foto-circulo{
+  width:180px; height:180px;
+  border-radius:50%;
+  object-fit:cover;
+  border:4px solid var(--marco);
+  box-shadow:0 10px 28px rgba(0,0,0,.8);
+}
+
+/* ---------- MENSAJES DE AUDIO ---------- */
+.lista-mensajes{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  max-width:640px;
+}
+.mensaje-audio{
+  background:var(--pared-2);
+  border:1px solid var(--linea);
+  border-left:4px solid var(--amarillo);
+  border-radius:4px;
+  padding:1.1rem 1.3rem;
+}
+.mensaje-audio .quien{
+  font-family:'Caveat', cursive;
+  font-size:1.4rem;
+  margin:0 0 .5rem 0;
+  color:var(--tiza);
+}
+.mensaje-audio audio{
+  width:100%;
+  filter:invert(1) hue-rotate(180deg); /* controles visibles en fondo oscuro */
+}
+
+/* ---------- JUEGO DE MEMORIA ---------- */
+.juego-wrap{ text-align:center; }
+#tablero{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(70px, 110px));
+  gap:.8rem;
+  justify-content:center;
+  margin:2rem auto;
+  max-width:520px;
+}
+.carta{
+  aspect-ratio:1/1;
+  perspective:800px;
+  cursor:pointer;
+}
+.carta:focus-visible{ outline:3px solid var(--tiza); outline-offset:4px; border-radius:10px; }
+.carta-interior{
+  position:relative; width:100%; height:100%;
+  transition:transform .5s;
+  transform-style:preserve-3d;
+}
+.carta.volteada .carta-interior,
+.carta.encontrada .carta-interior{
+  transform:rotateY(180deg);
+}
+.cara{
+  position:absolute; inset:0;
+  backface-visibility:hidden;
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.cara-atras{
+  background:var(--negro);
+  border:1px solid var(--linea);
+  font-family:'Caveat', cursive;
+  font-size:2rem;
+  color:var(--amarillo);
+}
+.cara-frente{
+  transform:rotateY(180deg);
+  background:var(--marco);
+}
+.cara-frente img{ width:100%; height:100%; object-fit:cover; }
+.carta.encontrada .cara-frente{ opacity:.45; }
+
+#estado-juego{
+  font-family:'Caveat', cursive;
+  font-size:1.6rem;
+  color:var(--tiza);
+  min-height:2rem;
+}
+#reiniciar{
+  margin-top:1rem;
+  border:1px solid var(--amarillo);
+  background:transparent;
+  color:var(--amarillo);
+  padding:.6rem 1.4rem;
+  border-radius:30px;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:500;
+  cursor:pointer;
+  transition:background .2s ease, color .2s ease;
+}
+#reiniciar:hover{ background:var(--amarillo); color:var(--negro); }
+#reiniciar:focus-visible{ outline:3px solid var(--tiza); outline-offset:3px; }
+
+footer{
+  text-align:center;
+  padding:3rem 1rem 4rem;
+  font-family:'Caveat', cursive;
+  font-size:1.6rem;
+  color:var(--tiza-suave);
+  border-top:1px solid var(--linea);
+}
+
+/* ---------- POP-UP (lightbox) para ver un dibujo en grande ---------- */
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:5vh 5vw;
+  z-index:100;
+}
+.lightbox.oculto{ display:none; }
+.lightbox img{
+  max-width:100%;
+  max-height:90vh;
+  object-fit:contain;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+  background:var(--marco);
+}
+.cerrar-lightbox{
+  position:fixed;
+  top:18px;
+  right:22px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1px solid var(--tiza);
+  background:rgba(0,0,0,.5);
+  color:var(--tiza);
+  font-size:1.3rem;
+  line-height:1;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.cerrar-lightbox:hover{ background:var(--amarillo); color:var(--negro); border-color:var(--amarillo); }
+.cerrar-lightbox:focus-visible{ outline:3px solid var(--tiza); outline-offset:3px; }
+
+/* ---------- AJUSTES PARA CELULAR Y TABLET ---------- */
+@media (max-width: 480px){
+  #tablero{
+    grid-template-columns:repeat(3, minmax(60px, 1fr));
+  }
+  .foto-circulo{
+    width:130px; height:130px;
+  }
+}
+
+
+/* ============================================================
+   BOTÓN AMARILLO + PÁGINA DE JUEGOS
+   ============================================================ */
+.boton-amarillo{
+  display:inline-block;
+  background:var(--amarillo);
+  color:var(--negro);
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:700;
+  font-size:1.05rem;
+  text-decoration:none;
+  padding:.9rem 2rem;
+  border-radius:40px;
+  border:2px solid var(--amarillo);
+  transition:transform .2s ease, background .2s ease, color .2s ease;
+}
+.boton-amarillo:hover{ transform:translateY(-3px); background:transparent; color:var(--amarillo); }
+.boton-amarillo:focus-visible{ outline:3px solid var(--tiza); outline-offset:4px; }
+
+#mas-juegos{ text-align:center; padding-top:1rem; }
+#mas-juegos p{
+  max-width:44ch;
+  margin:0 auto 1.6rem;
+  color:var(--tiza-suave);
+  line-height:1.6;
+}
+#mas-juegos .hand-pregunta{
+  font-family:'Caveat', cursive;
+  font-size:2rem;
+  color:var(--tiza);
+  margin-bottom:.4rem;
+}
+
+/* ---------- página juegos.html ---------- */
+.hero-chico{ min-height:56vh; }
+.volver{
+  position:absolute;
+  top:20px; left:6vw;
+  color:var(--tiza-suave);
+  text-decoration:none;
+  font-size:.95rem;
+}
+.volver:hover{ color:var(--amarillo); }
+.volver:focus-visible{ outline:3px solid var(--tiza); outline-offset:3px; }
+
+.grid-juegos{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+  gap:1.6rem;
+}
+.tarjeta-juego{
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+  background:var(--pared-2);
+  border:1px solid var(--linea);
+  border-top:4px solid var(--amarillo);
+  border-radius:4px;
+  padding:1.4rem 1.4rem 1.6rem;
+  color:var(--tiza);
+  text-decoration:none;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.tarjeta-juego:hover,
+.tarjeta-juego:focus-visible{
+  transform:translateY(-6px);
+  box-shadow:0 18px 36px rgba(0,0,0,.9);
+  border-color:var(--amarillo);
+}
+.tarjeta-juego:focus-visible{ outline:3px solid var(--tiza); outline-offset:3px; }
+.tarjeta-juego .icono{ font-size:2.2rem; line-height:1; }
+.tarjeta-juego h3{
+  font-family:'Caveat', cursive;
+  font-size:1.8rem;
+  margin:.2rem 0 0;
+  color:var(--tiza);
+}
+.tarjeta-juego p{
+  margin:0;
+  color:var(--tiza-suave);
+  line-height:1.55;
+  font-size:.98rem;
+}
+.tarjeta-juego .jugar{
+  margin-top:auto;
+  padding-top:.8rem;
+  color:var(--amarillo);
+  font-weight:500;
+}
+
+
+/* ============================================================
+   ANIME: saludo en japonés + FICHA DE PERSONAJE
+   ============================================================ */
+.jp{
+  font-family:'Zen Maru Gothic', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  font-weight:700;
+  letter-spacing:.18em;
+  color:var(--tiza-suave);
+  margin-top:1.2rem;
+  font-size:1.05rem;
+}
+.solo-halloween{ display:none; }
+
+.ficha{
+  max-width:760px;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.05) 1.2px, transparent 1.6px) 0 0 / 14px 14px,
+    var(--pared-2);
+  border:2px solid var(--tiza);
+  border-radius:6px;
+  padding:1.6rem;
+  box-shadow:8px 8px 0 var(--amarillo);
+}
+.ficha-cabecera{
+  display:flex;
+  align-items:center;
+  gap:1.2rem;
+  padding-bottom:1.2rem;
+  margin-bottom:1.2rem;
+  border-bottom:2px dashed var(--linea);
+}
+.ficha-foto{
+  width:104px; height:104px;
+  border-radius:50%;
+  object-fit:cover;
+  border:3px solid var(--amarillo);
+  background:var(--pared);
+  flex-shrink:0;
+}
+.ficha-nivel{
+  display:inline-block;
+  background:var(--amarillo);
+  color:var(--negro);
+  font-weight:700;
+  font-size:.85rem;
+  letter-spacing:.08em;
+  padding:.15rem .7rem;
+  transform:skewX(-12deg);
+}
+.ficha-nivel strong{ font-size:1.1rem; }
+.ficha-nombre{
+  font-family:'Caveat', cursive;
+  font-size:2.6rem;
+  line-height:1;
+  margin:.4rem 0 .2rem;
+  color:var(--tiza);
+}
+.ficha-clase{ color:var(--tiza-suave); font-size:.95rem; }
+
+.ficha-stats{ display:flex; flex-direction:column; gap:.9rem; }
+.stat{
+  display:grid;
+  grid-template-columns:minmax(120px, 210px) 1fr 3rem;
+  align-items:center;
+  gap:.8rem;
+  --v:0%;
+}
+.stat-nombre{ font-size:.95rem; }
+.barra{
+  height:12px;
+  background:var(--negro);
+  border:1px solid var(--linea);
+  transform:skewX(-14deg);
+  overflow:hidden;
+}
+.barra-llena{
+  height:100%;
+  width:0;
+  background:var(--amarillo);
+  transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+}
+.ficha.visible .barra-llena{ width:var(--v); }
+.stat-valor{
+  font-weight:700;
+  color:var(--amarillo);
+  text-align:right;
+}
+.ficha-habilidad{
+  margin-top:1.5rem;
+  padding:1rem 1.1rem;
+  border-left:4px solid var(--amarillo);
+  background:var(--negro);
+  line-height:1.55;
+  font-size:.98rem;
+}
+.ficha-habilidad .etiqueta{
+  display:block;
+  font-family:'Caveat', cursive;
+  font-size:1.4rem;
+  color:var(--amarillo);
+  margin-bottom:.1rem;
+}
+
+@media (max-width: 560px){
+  .ficha{ padding:1.2rem; box-shadow:5px 5px 0 var(--amarillo); }
+  .ficha-foto{ width:84px; height:84px; }
+  .ficha-nombre{ font-size:2.1rem; }
+  .stat{ grid-template-columns:1fr 3rem; row-gap:.3rem; }
+  .stat-nombre{ grid-column:1 / -1; }
+}
+
+/* ============================================================
+   MODO HALLOWEEN
+   Se activa con el botón (clase "halloween" en <body>).
+   Cambia el amarillo por naranja calabaza y el negro por un
+   negro con tinte morado, sin cambiar la estructura.
+   ============================================================ */
+.boton-halloween{
+  position:fixed;
+  right:16px; bottom:16px;
+  z-index:60;
+  background:var(--negro);
+  color:var(--amarillo);
+  border:2px solid var(--amarillo);
+  border-radius:40px;
+  padding:.65rem 1.1rem;
+  font-family:'Space Grotesk', sans-serif;
+  font-weight:700;
+  font-size:.95rem;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,0,0,.7);
+  transition:background .2s ease, color .2s ease, transform .2s ease;
+}
+.boton-halloween:hover{ background:var(--amarillo); color:var(--negro); transform:translateY(-2px); }
+.boton-halloween:focus-visible{ outline:3px solid var(--tiza); outline-offset:3px; }
+
+.deco-halloween, .telarana{ display:none; }
+
+body.halloween{
+  --amarillo:#ff7a1a;
+  --amarillo-suave:rgba(255,122,26,.30);
+  --pared:#0b0612;
+  --pared-2:#160d22;
+  --linea:#35224a;
+  --negro:#050309;
+  --tiza-suave:#aaa0b8;
+}
+body.halloween .hero{
+  background:
+    radial-gradient(ellipse at 50% 35%, #2c1346 0%, transparent 62%),
+    radial-gradient(ellipse at 50% 110%, rgba(255,122,26,.18) 0%, transparent 55%),
+    var(--negro);
+}
+body.halloween .hero h1 span{
+  text-shadow:0 0 18px rgba(255,122,26,.65), 0 0 42px rgba(255,122,26,.35);
+  animation:parpadeo 4s infinite;
+}
+body.halloween .solo-halloween{
+  display:block;
+  max-width:36ch;
+  margin:1rem auto 0;
+  color:var(--amarillo);
+  font-family:'Caveat', cursive;
+  font-size:1.6rem;
+  line-height:1.2;
+}
+body.halloween .ficha{ border-color:#c9b6e4; }
+
+@keyframes parpadeo{
+  0%,100%{ opacity:1; }
+  46%{ opacity:1; }
+  48%{ opacity:.45; }
+  50%{ opacity:1; }
+  72%{ opacity:.7; }
+  74%{ opacity:1; }
+}
+
+body.halloween .deco-halloween{
+  display:block;
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:5;
+}
+.deco-halloween span{
+  position:absolute;
+  top:0;
+  opacity:.8;
+  animation:flotar linear infinite;
+  transform:translateY(110vh);
+}
+@keyframes flotar{
+  0%  { transform:translate(0, 110vh) rotate(-10deg); }
+  50% { transform:translate(28px, 50vh) rotate(12deg); }
+  100%{ transform:translate(-14px, -20vh) rotate(-8deg); }
+}
+
+body.halloween .telarana{
+  display:block;
+  position:absolute;
+  top:0;
+  width:clamp(90px, 22vw, 190px);
+  color:rgba(244,241,236,.35);
+  pointer-events:none;
+  z-index:4;
+}
+.telarana-izq{ left:0; }
+.telarana-der{ right:0; transform:scaleX(-1); }
+
+@media (prefers-reduced-motion: reduce){
+  .deco-halloween span,
+  body.halloween .hero h1 span{ animation:none !important; }
+  .deco-halloween span{ transform:translateY(20vh); }
+}
+
+
+/* ============================================================
+   DEDICATORIA FINAL: carta sobre papel rayado
+   (solo para <footer class="pie-carta">; juegos.html no cambia)
+   ============================================================ */
+.pie-carta{
+  text-align:left;
+  font-family:'Space Grotesk', sans-serif;
+  font-size:1rem;
+  color:var(--tiza);
+  padding:4.5rem 5vw 5rem;
+}
+.carta-dedicatoria{
+  position:relative;
+  max-width:640px;
+  margin:0 auto;
+  padding:2.6rem 2rem 1.4rem;
+  background-color:var(--pared-2);
+  /* renglones de cuaderno: se repiten cada 2rem, igual que el interlineado */
+  background-image:repeating-linear-gradient(
+    to bottom,
+    transparent 0, transparent calc(2rem - 1px),
+    rgba(255,255,255,.07) calc(2rem - 1px), rgba(255,255,255,.07) 2rem
+  );
+  background-position:0 2.2rem;
+  border:1px solid var(--linea);
+  border-left:4px solid var(--amarillo);
+  border-radius:3px;
+  box-shadow:0 18px 40px rgba(0,0,0,.8);
+  transform:rotate(-.6deg);
+}
+.carta-cinta{
+  position:absolute;
+  top:-13px; left:50%;
+  width:84px; height:28px;
+  background:var(--amarillo);
+  opacity:.9;
+  transform:translateX(-50%) rotate(2deg);
+}
+.carta-dedicatoria p{
+  font-family:'Caveat', cursive;
+  font-weight:600;
+  font-size:1.55rem;
+  line-height:2rem;
+  margin:0 0 2rem;
+  color:var(--tiza);
+}
+.carta-dedicatoria .carta-final{
+  text-align:center;
+  font-size:2.3rem;
+  line-height:2.6rem;
+  margin:2.4rem 0 1rem;
+}
+.carta-dedicatoria .carta-final{
+  background:linear-gradient(transparent 62%, var(--amarillo-suave) 62%, var(--amarillo-suave) 92%, transparent 92%);
+  display:block;
+}
+.carta-dedicatoria .carta-firma{
+  text-align:right;
+  color:var(--amarillo);
+  font-size:1.9rem;
+  margin:1.6rem 0 .4rem;
+}
+
+@media (max-width: 480px){
+  .carta-dedicatoria{ padding:2.4rem 1.2rem 1.2rem; }
+  .carta-dedicatoria p{ font-size:1.4rem; }
+  .carta-dedicatoria .carta-final{ font-size:2rem; }
+  .carta-dedicatoria .carta-firma{ font-size:1.6rem; }
+}
