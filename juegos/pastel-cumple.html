@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pastel de cumpleaños</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     Mismos colores y fuentes que la página principal.
+     Si el "Modo Halloween" estaba activado, este pastel también
+     se pone naranja/morado (ver el script al final).
+     ============================================================ */
+  :root{
+    --negro:#000000;
+    --pared:#0a0a0a;
+    --pared-2:#161616;
+    --tiza:#f4f1ec;
+    --tiza-suave:#9b968e;
+    --linea:#2e2c29;
+    --amarillo:#ffd60a;
+    --amarillo-suave:rgba(255,214,10,.28);
+  }
+  body.halloween{
+    --amarillo:#ff7a1a;
+    --amarillo-suave:rgba(255,122,26,.30);
+    --pared:#0b0612;
+    --pared-2:#160d22;
+    --linea:#35224a;
+    --negro:#050309;
+    --tiza-suave:#aaa0b8;
+  }
+
+  *{ box-sizing:border-box; }
+  [hidden]{ display:none !important; }
+  html,body{ margin:0; }
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 50% 30%, #1d1d1d 0%, transparent 60%),
+      var(--negro);
+    color:var(--tiza);
+    font-family:'Space Grotesk', sans-serif;
+    overflow-x:hidden;
+  }
+  body.halloween{
+    background:
+      radial-gradient(ellipse at 50% 30%, #2c1346 0%, transparent 60%),
+      var(--negro);
+  }
+
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:2.2rem 1rem 3rem;
+    text-align:center;
+  }
+
+  h1{
+    font-family:'Caveat', cursive;
+    font-size:clamp(2.4rem, 9vw, 3.6rem);
+    line-height:1;
+    margin:0 0 .6rem;
+    display:inline-block;
+    transform:rotate(-1.5deg);
+    background:linear-gradient(transparent 62%, var(--amarillo-suave) 62%, var(--amarillo-suave) 92%, transparent 92%);
+    padding:0 .35rem;
+  }
+  .sub{
+    margin:.4rem auto 0;
+    max-width:44ch;
+    color:var(--tiza-suave);
+    line-height:1.55;
+  }
+  .sub strong{ color:var(--amarillo); }
+
+  #contador{
+    margin:1.1rem 0 .2rem;
+    font-family:'Caveat', cursive;
+    font-size:1.8rem;
+    color:var(--amarillo);
+    min-height:2.2rem;
+  }
+
+  /* ---------- pastel ---------- */
+  #pastel{
+    display:block;
+    width:min(100%, 520px);
+    height:auto;
+    margin:0 auto;
+    --soplo:0;
+    touch-action:manipulation;
+  }
+
+  .llama-g{
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .llama-lean{
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    transform:skewX(calc(var(--soplo) * -30deg));
+  }
+  .llama-f{
+    transform-box:fill-box;
+    transform-origin:50% 100%;
+    animation:parpadea .9s ease-in-out infinite alternate;
+    animation-delay:var(--d, 0s);
+  }
+  @keyframes parpadea{
+    from{ transform:scale(1,1) rotate(-2deg); }
+    to  { transform:scale(.92,1.1) rotate(2deg); }
+  }
+  .vela.apagada .llama-g{ opacity:0; transform:scale(.2); }
+
+  .humo circle{
+    fill:#cfcac0;
+    opacity:0;
+    transform-box:fill-box;
+    transform-origin:center;
+  }
+  .vela.apagada .humo circle{ animation:humo 1.8s ease-out forwards; }
+  .vela.apagada .humo circle:nth-child(2){ animation-delay:.15s; }
+  .vela.apagada .humo circle:nth-child(3){ animation-delay:.3s; }
+  @keyframes humo{
+    0%  { opacity:.6; transform:translate(0,0) scale(.6); }
+    100%{ opacity:0;  transform:translate(var(--dx, 6px), -38px) scale(1.8); }
+  }
+
+  /* ---------- controles ---------- */
+  .controles{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.8rem;
+    justify-content:center;
+    margin-top:1.4rem;
+  }
+  .btn{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:1rem;
+    border-radius:40px;
+    padding:.85rem 1.5rem;
+    cursor:pointer;
+    border:2px solid var(--amarillo);
+    background:var(--amarillo);
+    color:var(--negro);
+    transition:transform .2s ease, background .2s ease, color .2s ease;
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
+    touch-action:manipulation;
+  }
+  .btn:hover{ transform:translateY(-2px); background:transparent; color:var(--amarillo); }
+  .btn.sec{ background:transparent; color:var(--amarillo); }
+  .btn.sec:hover, .btn.sec.activo{ background:var(--amarillo); color:var(--negro); }
+  .btn:disabled{ opacity:.5; cursor:default; transform:none; }
+  .btn:focus-visible, summary:focus-visible, input:focus-visible{ outline:3px solid var(--tiza); outline-offset:3px; }
+  .enlace{
+    background:none; border:none; color:var(--tiza-suave);
+    font-family:inherit; font-size:.95rem; text-decoration:underline;
+    cursor:pointer; padding:.5rem;
+  }
+  .enlace:hover{ color:var(--amarillo); }
+
+  .btn.activo{ transform:scale(.96); background:transparent; color:var(--amarillo); }
+  .opcion{
+    display:inline-flex; align-items:center; gap:.6rem;
+    margin-top:1.4rem;
+    color:var(--tiza-suave);
+    font-size:.95rem;
+    cursor:pointer;
+  }
+  .opcion input{ accent-color:var(--amarillo); width:1.1rem; height:1.1rem; }
+
+  /* ---------- mensaje final ---------- */
+  #mensaje-final{
+    margin:1.8rem auto 0;
+    max-width:520px;
+    padding:1.6rem 1.4rem;
+    background:var(--pared-2);
+    border:2px solid var(--tiza);
+    border-radius:6px;
+    box-shadow:7px 7px 0 var(--amarillo);
+    animation:aparece .6s ease both;
+  }
+  @keyframes aparece{ from{ opacity:0; transform:translateY(14px); } to{ opacity:1; transform:none; } }
+  #mensaje-final h2{
+    font-family:'Caveat', cursive;
+    font-size:clamp(2.2rem, 8vw, 3rem);
+    line-height:1.05;
+    margin:0 0 .5rem;
+    color:var(--amarillo);
+  }
+  #mensaje-final p{ margin:0 0 1.1rem; color:var(--tiza-suave); line-height:1.55; }
+
+  #confeti{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    pointer-events:none;
+    z-index:50;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .llama-f, .vela.apagada .humo circle, #mensaje-final{ animation:none !important; }
+    .vela.apagada .humo circle{ opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <h1>Pide un deseo</h1>
+  <p class="sub">…y apaga las <strong>26</strong> velas. Mantén presionado el botón para soplar, poco a poco.</p>
+
+  <div id="contador" aria-live="polite">Velas encendidas: 26</div>
+
+  <svg id="pastel" viewBox="0 0 480 470" role="img" aria-label="Pastel de cumpleaños con 26 velas encendidas">
+    <defs>
+      <radialGradient id="brillo">
+        <stop offset="0" stop-color="#fff2a8" stop-opacity=".85"/>
+        <stop offset="1" stop-color="#ffb000" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="llamaG" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#ff7a1a"/>
+        <stop offset="1" stop-color="#ffe27a"/>
+      </linearGradient>
+    </defs>
+
+    <!-- plato -->
+    <ellipse cx="240" cy="400" rx="232" ry="58" fill="#1d1d1d" stroke="#3a3733" stroke-width="2"/>
+
+    <!-- piso de abajo (chocolate) -->
+    <path d="M40 285 v100 a200 48 0 0 0 400 0 v-100 z" fill="#4a2c1a"/>
+    <ellipse cx="240" cy="285" rx="200" ry="48" fill="#f4f1ec"/>
+    <path d="M40 285 v14 a200 48 0 0 0 400 0 v-14 a200 48 0 0 1 -400 0 z" fill="#f4f1ec"/>
+    <text x="240" y="395" text-anchor="middle" font-family="Caveat, cursive" font-weight="700" font-size="76" fill="#f4f1ec">26</text>
+    <g id="perlas-bajo" fill="#f4f1ec"></g>
+
+    <!-- piso de arriba -->
+    <path d="M90 175 v100 a150 36 0 0 0 300 0 v-100 z" style="fill:var(--amarillo)"/>
+    <path d="M90 175 v12 a150 36 0 0 0 300 0 v-12 a150 36 0 0 1 -300 0 z" fill="#f4f1ec"/>
+    <ellipse cx="240" cy="175" rx="150" ry="36" fill="#f4f1ec"/>
+    <g id="perlas-alto" fill="#f4f1ec"></g>
+
+    <!-- velas -->
+    <g id="velas"></g>
+  </svg>
+
+  <div class="controles">
+    <button id="btn-soplar" class="btn" aria-label="Mantén presionado para soplar las velas">💨 Mantén para soplar</button>
+  </div>
+  <button id="btn-reencender" class="enlace">Volver a encender las velas</button>
+
+  <label class="opcion"><input type="checkbox" id="chk-melodia" checked> Tocar la melodía de cumpleaños al final</label>
+
+  <section id="mensaje-final" hidden>
+    <h2 id="titulo-final">¡Feliz cumpleaños!</h2>
+    <p>Que se cumpla todo lo que pediste. ✨</p>
+    <button id="btn-otra" class="btn sec">🕯️ Encender de nuevo</button>
+  </section>
+</main>
+
+<canvas id="confeti"></canvas>
+
+<script>
+/* ============================================================
+   PERSONALIZA AQUÍ
+   ============================================================ */
+const NOMBRE = "Pikachu";       // nombre que sale en el mensaje final
+const TOTAL_VELAS = 26;         // se reparten solas entre el anillo de afuera y el de adentro
+const VELAS_POR_SEGUNDO = 2;    // qué tan rápido se apagan mientras mantiene presionado el botón (más bajo = más lento)
+
+/* ============================================================
+   LÓGICA (no hace falta tocar nada de aquí para abajo)
+   ============================================================ */
+try{ if(localStorage.getItem('modoHalloween') === '1') document.body.classList.add('halloween'); }catch(e){}
+
+const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+
+const pastel = $('pastel'), contador = $('contador');
+const btnSoplar = $('btn-soplar'), btnRe = $('btn-reencender'), btnOtra = $('btn-otra');
+const chkMelodia = $('chk-melodia');
+const mensajeFinal = $('mensaje-final');
+
+$('titulo-final').textContent = '¡Feliz cumpleaños, ' + NOMBRE + '!';
+
+/* ---------- decoración: perlitas en los bordes ---------- */
+function perlas(idGrupo, cx, cy, rx, ry, cantidad, r){
+  const g = $(idGrupo);
+  for(let i = 0; i <= cantidad; i++){
+    const th = Math.PI * i / cantidad;
+    const c = document.createElementNS(NS, 'circle');
+    c.setAttribute('cx', (cx + rx * Math.cos(th)).toFixed(1));
+    c.setAttribute('cy', (cy + ry * Math.sin(th)).toFixed(1));
+    c.setAttribute('r', r);
+    g.appendChild(c);
+  }
+}
+perlas('perlas-bajo', 240, 385, 198, 45, 22, 5.5);
+perlas('perlas-alto', 240, 275, 148, 33, 16, 4.5);
+
+/* ---------- velas ---------- */
+const COLORES = ['#ffd60a', '#ff4f8b', '#4fc3ff', '#7dffb0', '#f4f1ec', '#ff9f43'];
+const velas = [];
+let encendidas = 0;
+
+function posiciones(total){
+  const afuera = Math.round(total * 18 / 26);
+  const adentro = total - afuera;
+  const pts = [];
+  for(let i = 0; i < afuera; i++){
+    const a = 2 * Math.PI * i / afuera - Math.PI / 2;
+    pts.push({ x: 240 + 128 * Math.cos(a), y: 175 + 28 * Math.sin(a) });
+  }
+  for(let i = 0; i < adentro; i++){
+    const a = 2 * Math.PI * i / adentro + Math.PI / adentro;
+    pts.push({ x: 240 + 62 * Math.cos(a), y: 175 + 13 * Math.sin(a) });
+  }
+  return pts.sort((p, q) => p.y - q.y);      // las de atrás se dibujan primero
+}
+
+function crearVelas(){
+  const cont = $('velas');
+  cont.innerHTML = '';
+  velas.length = 0;
+  posiciones(TOTAL_VELAS).forEach((p, i) => {
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'vela');
+    g.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
+    const color = COLORES[i % COLORES.length];
+    const retraso = (Math.random() * 1.6).toFixed(2);
+    const dx = (Math.random() * 14 - 7).toFixed(1);
+    g.innerHTML = `
+      <rect x="-3.2" y="-34" width="6.4" height="34" rx="1.6" fill="${color}"/>
+      <rect x="-3.2" y="-26" width="6.4" height="3" fill="rgba(0,0,0,.18)"/>
+      <rect x="-3.2" y="-14" width="6.4" height="3" fill="rgba(0,0,0,.18)"/>
+      <line x1="0" y1="-34" x2="0" y2="-38" stroke="#222" stroke-width="1.4"/>
+      <g class="humo" transform="translate(0 -42)">
+        <circle cx="0" cy="0" r="3" style="--dx:${dx}px"/>
+        <circle cx="0" cy="0" r="3" style="--dx:${(dx * -0.6).toFixed(1)}px"/>
+        <circle cx="0" cy="0" r="2.4" style="--dx:${(dx * 0.4).toFixed(1)}px"/>
+      </g>
+      <g class="llama-g" transform="translate(0 -38)">
+        <circle cx="0" cy="-6" r="14" fill="url(#brillo)"/>
+        <g class="llama-lean">
+          <g class="llama-f" style="--d:${retraso}s">
+            <path d="M0 -13 C 4.5 -7 5 -2 0 3 C -5 -2 -4.5 -7 0 -13 Z" fill="url(#llamaG)"/>
+            <path d="M0 -6 C 2 -3 2 -1 0 1 C -2 -1 -2 -3 0 -6 Z" fill="#fff6c8"/>
+          </g>
+        </g>
+      </g>`;
+    const v = { g, apagada: false };
+    cont.appendChild(g);
+    velas.push(v);
+  });
+  encendidas = velas.length;
+  actualizarContador();
+}
+
+function actualizarContador(){
+  contador.textContent = encendidas === 0
+    ? '¡Todas apagadas! 🎉'
+    : 'Velas encendidas: ' + encendidas;
+  pastel.setAttribute('aria-label', 'Pastel de cumpleaños con ' + encendidas + ' velas encendidas');
+}
+
+function apagar(v){
+  if(v.apagada) return;
+  v.apagada = true;
+  v.g.classList.add('apagada');
+  encendidas--;
+  actualizarContador();
+  if(encendidas === 0) setTimeout(celebrar, 700);
+}
+
+function apagarAlgunas(n){
+  const prendidas = velas.filter(v => !v.apagada);
+  for(let i = 0; i < n && prendidas.length; i++){
+    const k = Math.floor(Math.random() * prendidas.length);
+    apagar(prendidas.splice(k, 1)[0]);
+  }
+}
+
+function reencender(){
+  velas.forEach(v => { v.apagada = false; v.g.classList.remove('apagada'); });
+  encendidas = velas.length;
+  actualizarContador();
+  mensajeFinal.hidden = true;
+  detenerConfeti();
+}
+
+/* ---------- audio (melodía) ---------- */
+let ctx = null;
+function asegurarAudio(){
+  try{
+    if(!ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) ctx = new AC();
+    }
+    if(ctx && ctx.state === 'suspended') ctx.resume();
+  }catch(e){}
+}
+
+// [frecuencia en Hz, duración en tiempos]
+const NOTAS = [
+  [392,.75],[392,.25],[440,1],[392,1],[523.25,1],[493.88,2],
+  [392,.75],[392,.25],[440,1],[392,1],[587.33,1],[523.25,2],
+  [392,.75],[392,.25],[783.99,1],[659.25,1],[523.25,1],[493.88,1],[440,2],
+  [698.46,.75],[698.46,.25],[659.25,1],[523.25,1],[587.33,1],[523.25,2]
+];
+
+function melodia(){
+  if(!ctx || !chkMelodia.checked) return;
+  const tiempo = .42;
+  let t = ctx.currentTime + .25;
+  NOTAS.forEach(([f, b]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    const dur = b * tiempo;
+    o.type = 'triangle';
+    o.frequency.value = f;
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(.22, t + .03);
+    g.gain.exponentialRampToValueAtTime(.001, t + dur * .95);
+    o.start(t); o.stop(t + dur);
+    t += dur;
+  });
+}
+
+/* ---------- celebración ---------- */
+function celebrar(){
+  mensajeFinal.hidden = false;
+  setTimeout(() => mensajeFinal.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }), 150);
+  confeti();
+  melodia();
+}
+
+const cv = $('confeti'), cx2 = cv.getContext('2d');
+let particulas = [], confetiActivo = false;
+
+function confeti(){
+  if(reduce) return;
+  cv.width = innerWidth; cv.height = innerHeight;
+  const cols = ['#ffd60a', '#ff4f8b', '#4fc3ff', '#7dffb0', '#f4f1ec', '#ff9f43'];
+  particulas = Array.from({ length: 170 }, (_, i) => ({
+    x: Math.random() * cv.width,
+    y: -20 - Math.random() * cv.height * .6,
+    vx: (Math.random() - .5) * 2.2,
+    vy: 2 + Math.random() * 3.2,
+    w: 6 + Math.random() * 6,
+    h: 4 + Math.random() * 4,
+    rot: Math.random() * 6.28,
+    vr: (Math.random() - .5) * .3,
+    col: cols[i % cols.length]
+  }));
+  confetiActivo = true;
+  requestAnimationFrame(pasoConfeti);
+}
+function pasoConfeti(){
+  if(!confetiActivo) return;
+  cx2.clearRect(0, 0, cv.width, cv.height);
+  let vivas = 0;
+  particulas.forEach(p => {
+    p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+    if(p.y < cv.height + 30) vivas++;
+    cx2.save();
+    cx2.translate(p.x, p.y); cx2.rotate(p.rot);
+    cx2.fillStyle = p.col;
+    cx2.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    cx2.restore();
+  });
+  if(vivas > 0) requestAnimationFrame(pasoConfeti); else detenerConfeti();
+}
+function detenerConfeti(){
+  confetiActivo = false;
+  cx2.clearRect(0, 0, cv.width, cv.height);
+}
+
+/* ---------- soplido: se mantiene presionado el botón ---------- */
+let manual = false, acc = 0, lean = 0, ultimo = performance.now();
+
+function bucle(ahora){
+  const dt = Math.min(.05, (ahora - ultimo) / 1000);
+  ultimo = ahora;
+
+  const soplando = manual && encendidas > 0;
+  if(soplando){
+    acc += dt * VELAS_POR_SEGUNDO;           // se acumula de a poquito
+    const n = Math.floor(acc);
+    if(n > 0){ acc -= n; apagarAlgunas(n); }
+  }
+  lean += ((soplando ? .8 : 0) - lean) * Math.min(1, dt * 10);
+  pastel.style.setProperty('--soplo', lean.toFixed(3));
+
+  requestAnimationFrame(bucle);
+}
+
+function iniciarManual(e){ e.preventDefault(); asegurarAudio(); manual = true; btnSoplar.classList.add('activo'); }
+function terminarManual(){ manual = false; btnSoplar.classList.remove('activo'); }
+btnSoplar.addEventListener('pointerdown', iniciarManual);
+['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => btnSoplar.addEventListener(ev, terminarManual));
+btnSoplar.addEventListener('keydown', e => { if(e.key === ' ' || e.key === 'Enter'){ if(!manual) iniciarManual(e); else e.preventDefault(); } });
+btnSoplar.addEventListener('keyup', e => { if(e.key === ' ' || e.key === 'Enter') terminarManual(); });
+btnSoplar.addEventListener('contextmenu', e => e.preventDefault());
+
+btnRe.addEventListener('click', () => { asegurarAudio(); reencender(); });
+btnOtra.addEventListener('click', () => { asegurarAudio(); reencender(); window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
+window.addEventListener('resize', () => { if(confetiActivo){ cv.width = innerWidth; cv.height = innerHeight; } });
+
+crearVelas();
+requestAnimationFrame(bucle);
+</script>
+</body>
+</html>
