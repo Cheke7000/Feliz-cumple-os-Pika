@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Más juegos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<div class="hero hero-chico">
+  <a class="volver" href="index.html">← volver</a>
+  <div class="eyebrow">más cositas para ti</div>
+  <h1>¡A <span>jugar</span>!</h1>
+  <svg class="squiggle" viewBox="0 0 220 28"><path d="M2 20 Q 40 2, 70 18 T 140 16 T 218 10"/></svg>
+  <p class="subt">Una colección de jueguitos interactivos. Toca el que quieras.</p>
+</div>
+
+<!-- ============================================================
+     LISTADO DE JUEGOS
+
+     Para agregar un juego nuevo:
+       1. Pon su archivo .html dentro de la carpeta juegos/
+          (mejor con nombre en minúsculas, sin espacios, con
+          guiones: mi-juego.html)
+       2. Copia el bloque de abajo (viene dentro de este comentario)
+          o copia cualquier tarjeta de INICIO JUEGO a FIN JUEGO, y
+          pégalo antes del </div> que cierra #grid-juegos.
+       3. Cambia el href, el emoji, el título y la descripción.
+     El estilo se aplica solo por la clase "tarjeta-juego".
+
+     BLOQUE PARA COPIAR:
+
+       <a class="tarjeta-juego" href="juegos/NOMBRE-DEL-JUEGO.html" target="_blank" rel="noopener">
+         <span class="icono">🎮</span>
+         <h3>Nombre del juego</h3>
+         <p>Una descripción corta.</p>
+         <span class="jugar">Jugar →</span>
+       </a>
+     ============================================================ -->
+<section id="lista-juegos">
+  <h2 class="titulo-seccion">Elige uno</h2>
+  <div class="grid-juegos" id="grid-juegos">
+
+    <!-- INICIO JUEGO -->
+    <a class="tarjeta-juego" href="juegos/pastel-cumple.html" target="_blank" rel="noopener">
+      <span class="icono">🎂</span>
+      <h3>PIDE UN DESEO</h3>
+      <p>Sé que no puedo darte un pastel físicamente, pero así podremos celebrar tu cumpleaños juntos.</p>
+      <span class="jugar">Jugar →</span>
+    </a>
+    <!-- FIN JUEGO -->
+
+    <!-- INICIO JUEGO -->
+    <a class="tarjeta-juego" href="juegos/acordes-guitarra.html" target="_blank" rel="noopener">
+      <span class="icono">🎸</span>
+      <h3>Acordes de guitarra</h3>
+      <p>Como estás aprendiendo a tocar la guitarra, aquí tienes una colección de acordes para practicar y aprender de forma interactiva y divertida.</p>
+      <span class="jugar">Jugar →</span>
+    </a>
+    <!-- FIN JUEGO -->
+
+    <!-- INICIO JUEGO -->
+    <a class="tarjeta-juego" href="juegos/slime de particulas.html" target="_blank" rel="noopener">
+      <span class="icono">🔴🟢⚪🟠🔵⚫🟤🔵</span>
+      <h3>Slime de partículas</h3>
+      <p>Un pequeño juego interactivo y relajante donde puedes manipular pequeñas partículas.</p>
+      <span class="jugar">Jugar →</span>
+    </a>
+    <!-- FIN JUEGO -->
+
+    <!-- INICIO JUEGO -->
+    <a class="tarjeta-juego" href="juegos/Girasoles.html" target="_blank" rel="noopener">
+      <span class="icono">🌻</span>
+      <h3>Flores amarillas</h3>
+      <p>Un regalito que ya te había dado, pero te lo pongo acá para que lo disfrutes.</p>
+      <span class="jugar">Jugar →</span>
+    </a>
+    <!-- FIN JUEGO -->
+
+    <!-- INICIO JUEGO -->
+    <a class="tarjeta-juego" href="juegos/Saturno Estrellado.html" target="_blank" rel="noopener">
+      <span class="icono">🪐</span>
+      <h3>Saturno Estrellado</h3>
+      <p>Una noche relajante con Saturno en el cielo.</p>
+      <span class="jugar">Jugar →</span>
+    </a>
+    <!-- FIN JUEGO -->
+
+  </div>
+</section>
+
+<footer>con cariño, Cheke ✦</footer>
+
+</body>
+</html>
